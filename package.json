@@ -24,7 +24,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.3.4",
-    "@angular/material": "20.3.2",
+    "@angular/material": "20.2.8",
     "@angular/common": "^20.3.4",
     "@angular/compiler": "^20.3.4",
     "@angular/core": "^20.3.4",
