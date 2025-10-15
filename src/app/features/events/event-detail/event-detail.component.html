@@ -1,0 +1,138 @@
+<div class="event-detail-container" *ngIf="!isLoading && event">
+  <div class="event-header">
+    <div class="event-image">
+      <div class="event-category">{{ event.category }}</div>
+      <div class="event-status" [class]="getEventStatus()">
+        {{ getEventStatus() }}
+      </div>
+    </div>
+    
+    <div class="event-info">
+      <h1>{{ event.title }}</h1>
+      <p class="event-description">{{ event.description }}</p>
+      
+      <div class="event-meta">
+        <div class="meta-item">
+          <span class="icon">📅</span>
+          <span>{{ event.date | date:'EEEE, MMMM dd, yyyy' }} at {{ event.time }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="icon">📍</span>
+          <span>{{ event.venue.name }} - {{ event.venue.address }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="icon">👥</span>
+          <span>{{ event.participants.length }}/{{ event.maxParticipants }} participants</span>
+        </div>
+        <div class="meta-item">
+          <span class="icon">👤</span>
+          <span>Organized by {{ event.organizer.name }}</span>
+        </div>
+      </div>
+
+      <div class="event-actions" *ngIf="authService.isAuthenticated()">
+        <button 
+          *ngIf="!isUserRegistered()"
+          (click)="rsvpToEvent()"
+          class="btn btn-primary btn-large"
+        >
+          RSVP to Event
+        </button>
+        <button 
+          *ngIf="isUserRegistered()"
+          (click)="cancelRsvp()"
+          class="btn btn-secondary btn-large"
+        >
+          Cancel RSVP
+        </button>
+        <a 
+          *ngIf="isUserOrganizer()"
+          [routerLink]="['/events', event._id, 'organizer-chat']"
+          class="btn btn-outline btn-large"
+        >
+          💬 Organizer Chat
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="event-content">
+    <div class="content-grid">
+      <!-- Event Details -->
+      <div class="content-section">
+        <h2>Event Details</h2>
+        <div class="details-list">
+          <div class="detail-item" *ngIf="event.requirements.length > 0">
+            <h3>Requirements</h3>
+            <ul>
+              <li *ngFor="let requirement of event.requirements">{{ requirement }}</li>
+            </ul>
+          </div>
+          
+          <div class="detail-item" *ngIf="event.tags.length > 0">
+            <h3>Tags</h3>
+            <div class="tags">
+              <span class="tag" *ngFor="let tag of event.tags">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="content-section">
+        <h2>Participants ({{ event.participants.length }})</h2>
+        <div class="participants-list">
+          <div class="participant-item" *ngFor="let participant of event.participants">
+            <div class="participant-avatar">
+              {{ participant.user.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-name">{{ participant.user.name }}</span>
+              <span class="participant-status">{{ participant.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Chat -->
+      <div class="content-section" *ngIf="authService.isAuthenticated()">
+        <h2>Event Chat</h2>
+        <div class="chat-container">
+          <div class="chat-messages">
+            <div class="chat-message" *ngFor="let message of event.chatMessages">
+              <div class="message-avatar">
+                {{ message.user.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="message-author">{{ message.user.name }}</span>
+                  <span class="message-time">{{ message.timestamp | date:'short' }}</span>
+                </div>
+                <div class="message-text">{{ message.message }}</div>
+                <div class="message-votes" *ngIf="message.isVote && message.votes.length > 0">
+                  <span class="vote-count">{{ message.votes.length }} votes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="no-messages" *ngIf="event.chatMessages.length === 0">
+            <p>No messages yet. Start the conversation!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading" *ngIf="isLoading">
+  <div class="loading-spinner"></div>
+  <p>Loading event details...</p>
+</div>
+
+<div class="error" *ngIf="!isLoading && errorMessage">
+  <div class="error-content">
+    <h2>Event Not Found</h2>
+    <p>{{ errorMessage }}</p>
+    <a routerLink="/events" class="btn btn-primary">Back to Events</a>
+  </div>
+</div>

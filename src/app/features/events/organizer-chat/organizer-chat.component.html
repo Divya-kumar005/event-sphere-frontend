@@ -1,0 +1,199 @@
+<div class="organizer-chat-container">
+  <div class="chat-header">
+    <div class="header-content">
+      <h1>Organizer Chat & Voting</h1>
+      <p>Collaborate with your team and make decisions together</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="loadCollaborationSummary()">
+        📊 Collaboration Summary
+      </button>
+      <a [routerLink]="['/events', eventId]" class="btn btn-secondary">
+        ← Back to Event
+      </a>
+    </div>
+  </div>
+
+  <div class="chat-content">
+    <!-- Collaboration Summary Modal -->
+    <div class="summary-modal" *ngIf="showSummary && collaborationSummary">
+      <div class="summary-content">
+        <div class="summary-header">
+          <h2>Collaboration Summary</h2>
+          <button class="close-btn" (click)="showSummary = false">×</button>
+        </div>
+        <div class="summary-stats">
+          <div class="stat-item">
+            <span class="stat-number">{{ collaborationSummary.totalMessages }}</span>
+            <span class="stat-label">Total Messages</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ collaborationSummary.votingMessages }}</span>
+            <span class="stat-label">Voting Messages</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ collaborationSummary.totalVotes }}</span>
+            <span class="stat-label">Total Votes</span>
+          </div>
+        </div>
+        <div class="organizer-activity">
+          <h3>Organizer Activity</h3>
+          <div class="activity-list">
+            <div class="activity-item" *ngFor="let activity of collaborationSummary.organizerActivity">
+              <div class="organizer-info">
+                <span class="organizer-name">{{ activity.organizer.name }}</span>
+                <span class="organizer-role">{{ activity.role }}</span>
+              </div>
+              <div class="activity-stats">
+                <span>{{ activity.messageCount }} messages</span>
+                <span>{{ activity.voteCount }} votes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="messages-container">
+      <div class="messages-list" #messagesContainer>
+        <div class="message-item" *ngFor="let message of messages; trackBy: trackByMessageId">
+          <div class="message-avatar">
+            {{ message.user.name.charAt(0).toUpperCase() }}
+          </div>
+          <div class="message-content">
+            <div class="message-header">
+              <span class="message-author">{{ message.user.name }}</span>
+              <span class="message-time">{{ formatTimestamp(message.timestamp) }}</span>
+              <button 
+                *ngIf="canDeleteMessage(message)"
+                class="delete-btn"
+                (click)="deleteMessage(message._id)"
+                title="Delete message"
+              >
+                🗑️
+              </button>
+            </div>
+            
+            <div class="message-text">{{ message.message }}</div>
+            
+            <!-- Voting Section -->
+            <div class="voting-section" *ngIf="message.isVote">
+              <div class="vote-options">
+                <button 
+                  *ngFor="let option of message.voteOptions"
+                  class="vote-option"
+                  [class.voted]="getUserVote(message) === option"
+                  [class.has-votes]="getVoteCount(message, option) > 0"
+                  (click)="voteOnMessage(message._id, option, option)"
+                >
+                  {{ option }}
+                  <span class="vote-count" *ngIf="getVoteCount(message, option) > 0">
+                    ({{ getVoteCount(message, option) }})
+                  </span>
+                </button>
+              </div>
+              
+              <div class="vote-summary">
+                <span class="total-votes">{{ getTotalVotes(message) }} votes</span>
+                <button 
+                  class="results-btn"
+                  (click)="toggleVotingResults(message._id)"
+                >
+                  {{ showVotingResults[message._id] ? 'Hide' : 'Show' }} Results
+                </button>
+              </div>
+              
+              <!-- Voting Results -->
+              <div class="voting-results" *ngIf="showVotingResults[message._id]">
+                <div class="result-item" *ngFor="let option of message.voteOptions">
+                  <div class="result-option">{{ option }}</div>
+                  <div class="result-bar">
+                    <div 
+                      class="result-fill"
+                      [style.width.%]="getVoteCount(message, option) / getTotalVotes(message) * 100"
+                    ></div>
+                  </div>
+                  <div class="result-count">{{ getVoteCount(message, option) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="no-messages" *ngIf="messages.length === 0">
+          <p>No messages yet. Start the conversation!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div class="message-input">
+      <div class="input-container">
+        <div class="input-options">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="isVote"
+              class="checkbox-input"
+            >
+            <span class="checkbox-text">Create voting message</span>
+          </label>
+          
+          <div class="vote-options-input" *ngIf="isVote">
+            <div class="vote-options-list">
+              <span 
+                *ngFor="let option of voteOptions; let i = index"
+                class="vote-option-tag"
+              >
+                {{ option }}
+                <button 
+                  class="remove-option"
+                  (click)="removeVoteOption(option)"
+                  *ngIf="i > 1"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+            <div class="add-option">
+              <input 
+                type="text" 
+                [(ngModel)]="newVoteOption"
+                placeholder="Add option"
+                class="option-input"
+                (keyup.enter)="addVoteOption()"
+              >
+              <button 
+                class="add-option-btn"
+                (click)="addVoteOption()"
+                [disabled]="!newVoteOption.trim()"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-field">
+          <textarea
+            [(ngModel)]="newMessage"
+            placeholder="Type your message..."
+            class="message-textarea"
+            rows="3"
+            (keyup.enter)="sendMessage()"
+            [disabled]="isLoading"
+          ></textarea>
+          <button 
+            class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="!newMessage.trim() || isLoading"
+          >
+            <span *ngIf="isLoading">Sending...</span>
+            <span *ngIf="!isLoading">{{ isVote ? 'Create Vote' : 'Send' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

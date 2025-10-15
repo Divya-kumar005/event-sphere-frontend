@@ -1,0 +1,124 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Participant Dashboard</h1>
+    <p>Your events, tasks, and contributions</p>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <h3>{{ stats.registeredEvents }}</h3>
+          <p>Registered Events</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>{{ stats.completedTasks }}</h3>
+          <p>Completed Tasks</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🚀</div>
+        <div class="stat-content">
+          <h3>{{ stats.upcomingEvents }}</h3>
+          <p>Upcoming Events</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalContributions }}</h3>
+          <p>Total Contributions</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+      <!-- My Events -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>My Events</h2>
+          <a routerLink="/events" class="btn btn-primary">Browse Events</a>
+        </div>
+        <div class="events-list">
+          <div class="event-item" *ngFor="let event of registeredEvents">
+            <div class="event-info">
+              <h3>{{ event.title }}</h3>
+              <p class="event-description">{{ event.description | slice:0:100 }}...</p>
+              <div class="event-meta">
+                <span class="event-date">📅 {{ event.date | date:'MMM dd, yyyy' }}</span>
+                <span class="event-location">📍 {{ event.venue.name }}</span>
+                <span class="event-status" [class]="getEventStatus(event)">
+                  {{ getEventStatus(event) }}
+                </span>
+              </div>
+            </div>
+            <div class="event-actions">
+              <a [routerLink]="['/events', event._id]" class="btn btn-outline btn-sm">View</a>
+            </div>
+          </div>
+          <div class="no-events" *ngIf="registeredEvents.length === 0">
+            <p>No events registered yet. <a routerLink="/events">Browse available events</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Tasks -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>My Tasks</h2>
+          <a routerLink="/tasks" class="btn btn-outline">View All</a>
+        </div>
+        <div class="tasks-list">
+          <div class="task-item" *ngFor="let task of myTasks">
+            <div class="task-info">
+              <h4>{{ task.title }}</h4>
+              <p class="task-description">{{ task.description | slice:0:80 }}...</p>
+              <div class="task-meta">
+                <span class="task-event">{{ task.event.title }}</span>
+                <span class="task-priority" [class]="task.priority">{{ task.priority }}</span>
+                <span class="task-status" [class]="getTaskStatus(task)">{{ getTaskStatus(task) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="no-tasks" *ngIf="myTasks.length === 0">
+            <p>No tasks assigned yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Announcements -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>Recent Announcements</h2>
+          <a routerLink="/announcements" class="btn btn-outline">View All</a>
+        </div>
+        <div class="announcements-list">
+          <div class="announcement-item" *ngFor="let announcement of recentAnnouncements">
+            <div class="announcement-info">
+              <h4>{{ announcement.title }}</h4>
+              <p class="announcement-content">{{ announcement.content | slice:0:100 }}...</p>
+              <div class="announcement-meta">
+                <span class="announcement-date">{{ announcement.createdAt | date:'MMM dd, yyyy' }}</span>
+                <span class="announcement-priority" [class]="announcement.priority">{{ announcement.priority }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="no-announcements" *ngIf="recentAnnouncements.length === 0">
+            <p>No announcements yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Loading dashboard...</p>
+  </div>
+</div>

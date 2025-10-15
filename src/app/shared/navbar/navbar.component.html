@@ -1,0 +1,60 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a routerLink="/" class="brand-link">
+        <span class="brand-icon">🎉</span>
+        <span class="brand-text">EventSphere</span>
+      </a>
+    </div>
+
+    <div class="navbar-menu" [class.active]="isMenuOpen">
+      <div class="navbar-nav">
+        <a routerLink="/" class="nav-link" (click)="closeMenu()">Home</a>
+        <a routerLink="/events" class="nav-link" (click)="closeMenu()">Events</a>
+        
+        <div class="nav-dropdown" *ngIf="isAuthenticated">
+          <button class="nav-link dropdown-toggle" (click)="toggleMenu()">
+            Dashboard
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          <div class="dropdown-menu" [class.show]="isMenuOpen">
+            <a [routerLink]="getDashboardRoute()" class="dropdown-item" (click)="closeMenu()">
+              My Dashboard
+            </a>
+            <a routerLink="/profile" class="dropdown-item" (click)="closeMenu()">
+              Profile
+            </a>
+            <a routerLink="/analytics" class="dropdown-item" (click)="closeMenu()" *ngIf="currentUser?.role === 'organizer'">
+              Analytics
+            </a>
+          </div>
+        </div>
+
+        <a routerLink="/create-event" class="nav-link" (click)="closeMenu()" *ngIf="currentUser?.role === 'organizer'">
+          Create Event
+        </a>
+      </div>
+
+      <div class="navbar-auth">
+        <div *ngIf="!isAuthenticated" class="auth-buttons">
+          <a routerLink="/login" class="btn btn-outline" (click)="closeMenu()">Login</a>
+          <a routerLink="/register" class="btn btn-primary" (click)="closeMenu()">Sign Up</a>
+        </div>
+        
+        <div *ngIf="isAuthenticated" class="user-menu">
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.name }}</span>
+            <span class="user-role">{{ currentUser?.role }}</span>
+          </div>
+          <button class="btn btn-outline btn-sm" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="navbar-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>

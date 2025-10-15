@@ -1,0 +1,187 @@
+<div class="create-event-container">
+  <div class="create-event-header">
+    <h1>Create New Event</h1>
+    <p>Fill in the details to create your event</p>
+  </div>
+
+  <div class="create-event-form">
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="title">Event Title *</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            class="form-control"
+            [class.error]="getFieldError('title')"
+            placeholder="Enter event title"
+          />
+          <div class="error-message" *ngIf="getFieldError('title')">
+            {{ getFieldError('title') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select
+            id="category"
+            formControlName="category"
+            class="form-control"
+            [class.error]="getFieldError('category')"
+          >
+            <option value="">Select category</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+          <div class="error-message" *ngIf="getFieldError('category')">
+            {{ getFieldError('category') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description *</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          class="form-control textarea"
+          [class.error]="getFieldError('description')"
+          placeholder="Describe your event in detail"
+          rows="4"
+        ></textarea>
+        <div class="error-message" *ngIf="getFieldError('description')">
+          {{ getFieldError('description') }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Date *</label>
+          <input
+            type="date"
+            id="date"
+            formControlName="date"
+            class="form-control"
+            [class.error]="getFieldError('date')"
+          />
+          <div class="error-message" *ngIf="getFieldError('date')">
+            {{ getFieldError('date') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="time">Time *</label>
+          <input
+            type="time"
+            id="time"
+            formControlName="time"
+            class="form-control"
+            [class.error]="getFieldError('time')"
+          />
+          <div class="error-message" *ngIf="getFieldError('time')">
+            {{ getFieldError('time') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" formGroupName="venue">
+        <div class="form-group">
+          <label for="venueName">Venue Name *</label>
+          <input
+            type="text"
+            id="venueName"
+            formControlName="name"
+            class="form-control"
+            [class.error]="getFieldError('venue.name')"
+            placeholder="Enter venue name"
+          />
+          <div class="error-message" *ngIf="getFieldError('venue.name')">
+            {{ getFieldError('venue.name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="venueAddress">Venue Address *</label>
+          <input
+            type="text"
+            id="venueAddress"
+            formControlName="address"
+            class="form-control"
+            [class.error]="getFieldError('venue.address')"
+            placeholder="Enter venue address"
+          />
+          <div class="error-message" *ngIf="getFieldError('venue.address')">
+            {{ getFieldError('venue.address') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="maxParticipants">Max Participants</label>
+          <input
+            type="number"
+            id="maxParticipants"
+            formControlName="maxParticipants"
+            class="form-control"
+            [class.error]="getFieldError('maxParticipants')"
+            min="1"
+          />
+          <div class="error-message" *ngIf="getFieldError('maxParticipants')">
+            {{ getFieldError('maxParticipants') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="isPublic">Visibility</label>
+          <select
+            id="isPublic"
+            formControlName="isPublic"
+            class="form-control"
+          >
+            <option [value]="true">Public</option>
+            <option [value]="false">Private</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="requirements">Requirements (comma-separated)</label>
+        <input
+          type="text"
+          id="requirements"
+          formControlName="requirements"
+          class="form-control"
+          placeholder="e.g., Laptop, Notebook, ID Card"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated)</label>
+        <input
+          type="text"
+          id="tags"
+          formControlName="tags"
+          class="form-control"
+          placeholder="e.g., networking, workshop, free"
+        />
+      </div>
+
+      <div class="error-message general-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary btn-large"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="isLoading">Creating Event...</span>
+          <span *ngIf="!isLoading">Create Event</span>
+        </button>
+        <a routerLink="/dashboard" class="btn btn-outline btn-large">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

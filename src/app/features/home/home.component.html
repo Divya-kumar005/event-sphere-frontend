@@ -1,0 +1,109 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Welcome to EventSphere</h1>
+      <p class="hero-subtitle">
+        The ultimate platform for event management, collaboration, and engagement. 
+        Whether you're organizing events or participating in them, EventSphere has you covered.
+      </p>
+      <div class="hero-actions" *ngIf="!isAuthenticated">
+        <a routerLink="/register" class="btn btn-primary">Get Started</a>
+        <a routerLink="/login" class="btn btn-secondary">Sign In</a>
+      </div>
+      <div class="hero-actions" *ngIf="isAuthenticated">
+        <a [routerLink]="getDashboardRoute()" class="btn btn-primary">Go to Dashboard</a>
+        <a routerLink="/events" class="btn btn-secondary">Browse Events</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2>Why Choose EventSphere?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Centralized Management</h3>
+          <p>Manage all your events, participants, and tasks in one place. No more scattered tools and missed communications.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👥</div>
+          <h3>Collaborative Planning</h3>
+          <p>Work together with your team through real-time chat, voting systems, and task assignments for seamless event planning.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Analytics & Insights</h3>
+          <p>Track attendance, engagement, and success metrics with comprehensive analytics and reporting tools.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <h3>Smart Navigation</h3>
+          <p>Integrated maps and location services make it easy for participants to find and navigate to your events.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <h3>Real-time Updates</h3>
+          <p>Keep everyone informed with instant announcements, notifications, and event updates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Mobile Friendly</h3>
+          <p>Access EventSphere from any device with our responsive design and mobile-optimized interface.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Events Section -->
+  <section class="events-section" *ngIf="!isLoading">
+    <div class="container">
+      <h2>Featured Events</h2>
+      <div class="events-grid" *ngIf="(featuredEvents?.length ?? 0) > 0">
+        <div class="event-card" *ngFor="let event of featuredEvents">
+          <div class="event-image">
+            <div class="event-category">{{ event?.category || '' }}</div>
+          </div>
+          <div class="event-content">
+            <h3>{{ event?.title || '' }}</h3>
+            <p class="event-description">{{ (event?.description || '') | slice:0:100 }}...</p>
+            <div class="event-meta">
+              <div class="event-date">
+                <span class="icon">📅</span>
+                {{ event?.date ? (event.date | date:'MMM dd, yyyy') : '' }}{{ event?.time ? (' at ' + event.time) : '' }}
+              </div>
+              <div class="event-location">
+                <span class="icon">📍</span>
+                {{ event?.venue?.name || '' }}
+              </div>
+              <div class="event-participants">
+                <span class="icon">👥</span>
+                {{ (event?.participants?.length || 0) }}/{{ event?.maxParticipants || 0 }} participants
+              </div>
+            </div>
+            <div class="event-actions">
+              <a [routerLink]="['/events', event?._id]" class="btn btn-outline">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="no-events" *ngIf="(featuredEvents?.length ?? 0) === 0">
+        <p>No events available at the moment. Check back later!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section" *ngIf="!isAuthenticated">
+    <div class="container">
+      <h2>Ready to Get Started?</h2>
+      <p>Join thousands of event organizers and participants who trust EventSphere for their event management needs.</p>
+      <div class="cta-actions">
+        <a routerLink="/register" class="btn btn-primary btn-large">Create Your Account</a>
+        <a routerLink="/events" class="btn btn-outline btn-large">Browse Events</a>
+      </div>
+    </div>
+  </section>
+</div>

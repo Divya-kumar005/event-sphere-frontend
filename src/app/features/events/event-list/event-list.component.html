@@ -1,0 +1,124 @@
+<div class="events-container">
+  <div class="events-header">
+    <h1>Events</h1>
+    <p>Discover and join amazing events in your community</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters">
+      <div class="filter-group">
+        <label for="category">Category:</label>
+        <select id="category" [(ngModel)]="selectedCategory" (change)="onCategoryChange(selectedCategory)" class="filter-select">
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="status">Status:</label>
+        <select id="status" [(ngModel)]="selectedStatus" (change)="onStatusChange(selectedStatus)" class="filter-select">
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="events-count">
+      <span>{{ totalEvents }} events found</span>
+    </div>
+  </div>
+
+  <!-- Events Grid -->
+  <div class="events-grid" *ngIf="!isLoading">
+    <div class="event-card" *ngFor="let event of events">
+      <div class="event-image">
+        <div class="event-category">{{ event.category }}</div>
+        <div class="event-status" [class]="getEventStatus(event)">
+          {{ getEventStatus(event) }}
+        </div>
+      </div>
+      
+      <div class="event-content">
+        <h3>{{ event.title }}</h3>
+        <p class="event-description">{{ event.description | slice:0:120 }}...</p>
+        
+        <div class="event-meta">
+          <div class="event-date">
+            <span class="icon">📅</span>
+            {{ event.date | date:'MMM dd, yyyy' }} at {{ event.time }}
+          </div>
+          <div class="event-location">
+            <span class="icon">📍</span>
+            {{ event.venue.name }}
+          </div>
+          <div class="event-participants">
+            <span class="icon">👥</span>
+            {{ event.participants.length }}/{{ event.maxParticipants }} participants
+          </div>
+        </div>
+        
+        <div class="event-actions">
+          <a [routerLink]="['/events', event._id]" class="btn btn-outline">View Details</a>
+          <button 
+            *ngIf="authService.isAuthenticated() && !isUserRegistered(event)"
+            (click)="rsvpToEvent(event._id)"
+            class="btn btn-primary"
+          >
+            RSVP
+          </button>
+          <button 
+            *ngIf="authService.isAuthenticated() && isUserRegistered(event)"
+            (click)="cancelRsvp(event._id)"
+            class="btn btn-secondary"
+          >
+            Cancel RSVP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Loading events...</p>
+  </div>
+
+  <!-- No Events -->
+  <div class="no-events" *ngIf="!isLoading && events.length === 0">
+    <div class="no-events-content">
+      <div class="no-events-icon">📅</div>
+      <h3>No events found</h3>
+      <p>Try adjusting your filters or check back later for new events.</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+    <button 
+      class="pagination-btn"
+      [disabled]="currentPage === 1"
+      (click)="onPageChange(currentPage - 1)"
+    >
+      Previous
+    </button>
+    
+    <div class="pagination-numbers">
+      <button 
+        *ngFor="let page of getPageNumbers()"
+        class="pagination-number"
+        [class.active]="page === currentPage"
+        (click)="onPageChange(page)"
+      >
+        {{ page }}
+      </button>
+    </div>
+    
+    <button 
+      class="pagination-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="onPageChange(currentPage + 1)"
+    >
+      Next
+    </button>
+  </div>
+</div>

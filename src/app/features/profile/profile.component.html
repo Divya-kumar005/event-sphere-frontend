@@ -1,0 +1,170 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Profile Settings</h1>
+    <p>Manage your account information and preferences</p>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-sections">
+      <!-- Profile Information -->
+      <div class="profile-section">
+        <h2>Profile Information</h2>
+        <form [formGroup]="profileForm" (ngSubmit)="onProfileSubmit()" class="profile-form">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              [class.error]="getFieldError(profileForm, 'name')"
+              placeholder="Enter your full name"
+            />
+            <div class="error-message" *ngIf="getFieldError(profileForm, 'name')">
+              {{ getFieldError(profileForm, 'name') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-control"
+              [class.error]="getFieldError(profileForm, 'email')"
+              placeholder="Enter your email"
+            />
+            <div class="error-message" *ngIf="getFieldError(profileForm, 'email')">
+              {{ getFieldError(profileForm, 'email') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="organization">Organization</label>
+            <input
+              type="text"
+              id="organization"
+              formControlName="organization"
+              class="form-control"
+              placeholder="Enter your organization"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              class="form-control"
+              placeholder="Enter your phone number"
+            />
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isLoading"
+            >
+              <span *ngIf="isLoading">Updating...</span>
+              <span *ngIf="!isLoading">Update Profile</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Change Password -->
+      <div class="profile-section">
+        <h2>Change Password</h2>
+        <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="password-form">
+          <div class="form-group">
+            <label for="currentPassword">Current Password *</label>
+            <input
+              type="password"
+              id="currentPassword"
+              formControlName="currentPassword"
+              class="form-control"
+              [class.error]="getFieldError(passwordForm, 'currentPassword')"
+              placeholder="Enter current password"
+            />
+            <div class="error-message" *ngIf="getFieldError(passwordForm, 'currentPassword')">
+              {{ getFieldError(passwordForm, 'currentPassword') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">New Password *</label>
+            <input
+              type="password"
+              id="newPassword"
+              formControlName="newPassword"
+              class="form-control"
+              [class.error]="getFieldError(passwordForm, 'newPassword')"
+              placeholder="Enter new password"
+            />
+            <div class="error-message" *ngIf="getFieldError(passwordForm, 'newPassword')">
+              {{ getFieldError(passwordForm, 'newPassword') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password *</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              class="form-control"
+              [class.error]="getFieldError(passwordForm, 'confirmPassword')"
+              placeholder="Confirm new password"
+            />
+            <div class="error-message" *ngIf="getFieldError(passwordForm, 'confirmPassword')">
+              {{ getFieldError(passwordForm, 'confirmPassword') }}
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isLoading"
+            >
+              <span *ngIf="isLoading">Changing Password...</span>
+              <span *ngIf="!isLoading">Change Password</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Account Information -->
+      <div class="profile-section">
+        <h2>Account Information</h2>
+        <div class="account-info">
+          <div class="info-item">
+            <span class="info-label">Account Type:</span>
+            <span class="info-value">{{ currentUser?.role | titlecase }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Member Since:</span>
+            <span class="info-value">Recently joined</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Profile Image:</span>
+            <span class="info-value">Not implemented yet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages" *ngIf="errorMessage || successMessage">
+      <div class="error-message general-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+    </div>
+  </div>
+</div>
